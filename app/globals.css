@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+/* =========================================================
+   DESIGN TOKENS — Portfolio Cosmos
+   Source of truth for all color values in this codebase.
+   Never hardcode hex values outside of this :root block.
+   All components reference var(--token-name) or the
+   Tailwind aliases mapped in @theme below.
+   ========================================================= */
+
+:root {
+  /* Background / surface */
+  --void-black:     #05060A;
+  --deep-navy:      #0B1226;
+
+  /* Primary accent — console / telemetry */
+  --phosphor-amber: #FFB454;
+
+  /* Secondary accent — active / success states */
+  --phosphor-green: #7CFFB2;
+
+  /* Contrast panels — used sparingly */
+  --parchment:      #EDE6D6;
+
+  /* Reserved — alerts / remnant markers only */
+  --signal-red:     #FF5C5C;
+
+  /* Typography */
+  --text-primary:   #E8EAF0;
+  --text-muted:     #8890A6;
+
+  /* Font variables — populated by next/font in layout.tsx */
+  --font-display: '';   /* Fraunces — headings */
+  --font-mono:    '';   /* JetBrains Mono — console/data/telemetry */
+  --font-body:    '';   /* Inter — body copy */
+}
+
+/* =========================================================
+   TAILWIND v4 THEME EXTENSION
+   Maps design tokens into Tailwind utility classes so
+   components can write `text-amber`, `bg-void`, etc.
+   ========================================================= */
+
+@theme inline {
+  /* Colors */
+  --color-void:           var(--void-black);
+  --color-navy:           var(--deep-navy);
+  --color-amber:          var(--phosphor-amber);
+  --color-green:          var(--phosphor-green);
+  --color-parchment:      var(--parchment);
+  --color-signal:         var(--signal-red);
+  --color-text-primary:   var(--text-primary);
+  --color-text-muted:     var(--text-muted);
+
+  /* Fonts */
+  --font-display:  var(--font-display);
+  --font-mono:     var(--font-mono);
+  --font-sans:     var(--font-body);
+}
+
+/* =========================================================
+   BASE / RESET
+   ========================================================= */
+
+html {
+  background-color: var(--void-black);
+  color: var(--text-primary);
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100dvh;
+}
+
+/* Headings use the display/serif font */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display), Georgia, serif;
+}
+
+/* Code / monospace elements use the mono font */
+code, kbd, samp, pre {
+  font-family: var(--font-mono), 'Courier New', monospace;
+}
