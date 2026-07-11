@@ -235,6 +235,28 @@ export function GalaxyMap() {
           />
         ))}
 
+        {/* ── Hidden drift anomaly (Secret entry point to Observatory) ── */}
+        <GalaxyCluster
+          cx={900}
+          cy={100}
+          radius={8}
+          count={isMobile ? 6 : 12}
+          seed={999}
+          label=""
+          accentColor="var(--signal-red)"
+          onClick={() => {
+            if (navigating) return;
+            setNavigating(true);
+            if (isCalm) {
+              router.push("/observatory");
+            } else {
+              animateZoom(900, 100, () => {
+                router.push("/observatory");
+              });
+            }
+          }}
+        />
+
         {/* ── Coordinate labels (atlas aesthetic) ── */}
         <g aria-hidden="true" opacity="0.2">
           <text
@@ -278,6 +300,7 @@ export function GalaxyMap() {
             Navigate to {g.label}
           </a>
         ))}
+        <a href="/observatory">Navigate to Observatory Simulation</a>
       </nav>
     </div>
   );
