@@ -101,3 +101,28 @@ code, kbd, samp, pre {
     scroll-behavior: auto !important;
   }
 }
+
+/* =========================================================
+   PHASE 3 — Galaxy Map Animations
+   These run only in Full Experience mode (checked in React).
+   The prefers-reduced-motion block above is the CSS safety net
+   that stops them if the OS setting is enabled.
+   ========================================================= */
+
+@keyframes orbit-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Galaxy cluster keyboard focus ring */
+.galaxy-focus-ring {
+  opacity: 0;
+}
+:focus-visible .galaxy-focus-ring {
+  opacity: 0.6;
+}
