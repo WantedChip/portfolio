@@ -181,3 +181,84 @@ export function zoomTargetViewBox(
     h: newH,
   };
 }
+
+// ── Phase 4: Solar System Orbit Math ──────────────────────────────────────────
+
+export interface OrbitPosition extends Point2D {
+  angle: number; // current angle in radians
+}
+
+/**
+ * Computes x, y position of a body on an elliptical orbit.
+ * @param cx    Center x of the solar system
+ * @param cy    Center y of the solar system
+ * @param radius Orbit radius in SVG units
+ * @param angle  Current angle in radians
+ */
+export function computeOrbitPosition(
+  cx: number,
+  cy: number,
+  radius: number,
+  angle: number,
+): OrbitPosition {
+  return {
+    x: cx + radius * Math.cos(angle),
+    y: cy + radius * Math.sin(angle),
+    angle,
+  };
+}
+
+/**
+ * Maps a project's startDate to an orbit radius.
+ * Newer projects are closer in (smaller radius), older ones further out.
+ * Radii are distributed across [minRadius, maxRadius].
+ *
+ * @param startDate  ISO date string e.g. "2024-03-15"
+ * @param allDates   All project start dates (to normalize the range)
+ * @param minRadius  Innermost orbit radius
+ * @param maxRadius  Outermost orbit radius
+ */
+export function dateToOrbitRadius(
+  startDate: string,
+  allDates: string[],
+  minRadius = 80,
+  maxRadius = 340,
+): number {
+  const ms = new Date(startDate).getTime();
+  const timestamps = allDates.map((d) => new Date(d).getTime());
+  const oldest = Math.min(...timestamps);
+  const newest = Math.max(...timestamps);
+
+  if (oldest === newest) return (minRadius + maxRadius) / 2;
+
+  // Older = further out, newer = closer in
+  const t = (ms - oldest) / (newest - oldest); // 0 = oldest, 1 = newest
+  return maxRadius - t * (maxRadius - minRadius);
+}
+
+/**
+ * Angular speed for a planet on its orbit.
+ * Slower for outer orbits (Kepler-ish feel) — outer bodies feel heavier.
+ * Units: radians per millisecond.
+ *
+ * Target: roughly one full orbit in 90–300 seconds (very slow, "alive" feel).
+ */
+export function orbitAngularSpeed(radius: number): number {
+  // Base period: 120s at radius 200; scales inversely with sqrt(radius)
+  const basePeriodMs = 120_000;
+  const baseRadius = 200;
+  const periodMs = basePeriodMs * Math.sqrt(radius / baseRadius);
+  return (2 * Math.PI) / periodMs;
+}
+
+/**
+ * Deterministic starting angle for a project (so positions don't jump on hydration).
+ * Uses the slug string as a seed.
+ */
+export function projectStartAngle(slug: string): number {
+  let hash = 0;
+  for (let i = 0; i < slug.length; i++) {
+    hash = ((hash << 5) - hash + slug.charCodeAt(i)) | 0;
+  }
+  return ((hash >>> 0) / 0xffffffff) * Math.PI * 2;
+}

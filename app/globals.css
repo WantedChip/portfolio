@@ -126,3 +126,12 @@ code, kbd, samp, pre {
 :focus-visible .galaxy-focus-ring {
   opacity: 0.6;
 }
+
+/* ── Phase 4 Animations ── */
+
+/* FormingBody accretion particle pulse */
+@keyframes forming-pulse {
+  0%, 100% { opacity: 0.6; r: 1; }
+  50%       { opacity: 0.1; r: 0.3; }
+}
+
