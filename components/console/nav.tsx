@@ -19,6 +19,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSound } from "@/lib/audio";
 
 // ── Nav items ─────────────────────────────────────────────────────────────────
 
@@ -40,6 +41,7 @@ export function Nav() {
   const pathname = usePathname();
   const panelRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
+  const { play: playBlip } = useSound("/audio/blip.mp3");
 
   const close = useCallback(() => setOpen(false), []);
 
@@ -94,7 +96,10 @@ export function Nav() {
       <button
         ref={toggleRef}
         id="nav-toggle"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          playBlip();
+          setOpen((v) => !v);
+        }}
         aria-expanded={open}
         aria-controls="nav-panel"
         aria-label={open ? "Close navigation" : "Open navigation"}
@@ -135,7 +140,10 @@ export function Nav() {
         <div
           className="fixed inset-0 z-40"
           style={{ backgroundColor: "rgba(5, 6, 10, 0.6)" }}
-          onClick={close}
+          onClick={() => {
+            playBlip();
+            close();
+          }}
           aria-hidden="true"
         />
       )}
@@ -186,7 +194,9 @@ export function Nav() {
                     "--tw-ring-color": "var(--phosphor-amber)",
                   } as React.CSSProperties
                 }
+                onClick={playBlip}
                 onMouseEnter={(e) => {
+                  playBlip();
                   if (!isActive)
                     (e.currentTarget as HTMLAnchorElement).style.backgroundColor =
                       "rgba(255, 180, 84, 0.04)";

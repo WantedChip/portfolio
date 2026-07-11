@@ -11,8 +11,10 @@
  * Under Full Experience: the green dot pulses continuously.
  */
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { useSiteMode } from "@/components/console/site-mode-context";
+import { useSound } from "@/lib/audio";
 import type { Update } from "@/lib/schemas";
 
 interface PulseEntryProps {
@@ -28,6 +30,12 @@ export function PulseEntry({
 }: PulseEntryProps) {
   const { experienceMode } = useSiteMode();
   const isCalm = experienceMode === "calm";
+  const { play: playTick } = useSound("/audio/pulse-tick.mp3");
+
+  // Play tick on mount to register entry addition sound
+  useEffect(() => {
+    playTick();
+  }, [playTick]);
 
   // Monospace date formatting
   const formattedDate = new Date(update.date)

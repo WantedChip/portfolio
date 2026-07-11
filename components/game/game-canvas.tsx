@@ -22,6 +22,7 @@ import { GameState } from "./engine/types";
 import { initGameState, updateGameFrame } from "./engine/loop";
 import { drawShip } from "./engine/ship";
 import { drawAsteroid } from "./engine/asteroid";
+import { useSound } from "@/lib/audio";
 
 const AMBER_VAR = "var(--phosphor-amber)";
 const GREEN_VAR = "var(--phosphor-green)";
@@ -31,6 +32,11 @@ export function GameCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [isPaused, setIsPaused] = useState(false);
+
+  // Hook sound playbacks
+  const { play: playFire } = useSound("/audio/game-fire.mp3");
+  const { play: playExplosion } = useSound("/audio/game-explosion.mp3");
+  const { play: playGameOver } = useSound("/audio/calibrate-confirm.mp3");
 
   // Keep track of active keys
   const keysRef = useRef({
@@ -182,8 +188,27 @@ export function GameCanvas() {
         fire: keysRef.current.fire || touchStateRef.current.fire,
       };
 
+      const oldBulletCount = gameState.bullets.length;
+      const oldAsteroidCount = gameState.asteroids.length;
+      const oldLives = gameState.lives;
+      const oldGameOver = gameState.gameOver;
+
       // 1. Run physics update timestep
       updateGameFrame(gameState, activeControls, AMBER_VAR, GREEN_VAR);
+
+      // Trigger audio events based on state variations
+      if (gameState.bullets.length > oldBulletCount) {
+        playFire();
+      }
+      if (gameState.asteroids.length < oldAsteroidCount) {
+        playExplosion();
+      }
+      if (gameState.lives < oldLives) {
+        playExplosion(); // Player hit explosion rumble
+      }
+      if (gameState.gameOver && !oldGameOver) {
+        playGameOver(); // Deep chord chime
+      }
 
       // 2. Render Scene
       ctx.fillStyle = "rgba(5, 6, 10, 1)"; // --void-black background matches

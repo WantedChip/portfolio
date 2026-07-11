@@ -16,12 +16,14 @@
 
 import { useEffect, useRef } from "react";
 import { useSiteMode, type ExperienceMode } from "./site-mode-context";
+import { useSound } from "@/lib/audio";
 
 export function CalibrationModal() {
   const { calibrated, calibrate } = useSiteMode();
   const fullBtnRef = useRef<HTMLButtonElement>(null);
   const calmBtnRef = useRef<HTMLButtonElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+  const { play: playConfirm } = useSound("/audio/calibrate-confirm.mp3");
 
   // Focus the first button when modal opens
   useEffect(() => {
@@ -73,6 +75,12 @@ export function CalibrationModal() {
   const handleChoice = (mode: ExperienceMode) => {
     const sound = mode === "full";
     calibrate(mode, sound);
+    if (sound) {
+      // Small timeout gives React time to process context state change, enabling audio
+      setTimeout(() => {
+        playConfirm();
+      }, 50);
+    }
   };
 
   if (calibrated) return null;
