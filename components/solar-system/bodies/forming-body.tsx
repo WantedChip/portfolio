@@ -36,11 +36,11 @@ export function FormingBody({ x, y, size, id, seed }: FormingBodyProps) {
       const jitter = (r() - 0.5) * 0.4;
       const dist = size * (1.6 + r() * 0.8);
       return {
-        angle: baseAngle + jitter,
-        dist,
-        r: r() * 1.2 + 0.4,
-        opacity: r() * 0.4 + 0.2,
-        animDelay: r() * 1.5,
+        angle: Math.round((baseAngle + jitter) * 10000) / 10000,
+        dist: Math.round(dist * 10000) / 10000,
+        r: Math.round((r() * 1.2 + 0.4) * 10000) / 10000,
+        opacity: Math.round((r() * 0.4 + 0.2) * 10000) / 10000,
+        animDelay: Math.round((r() * 1.5) * 10000) / 10000,
       };
     });
   }, [seed, size]);

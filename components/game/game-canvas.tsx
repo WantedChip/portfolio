@@ -33,6 +33,10 @@ export function GameCanvas() {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [isPaused, setIsPaused] = useState(false);
 
+  // Resolved CSS variable colors for canvas context compatibility
+  const amberColorRef = useRef("rgba(255, 180, 84, 1)");
+  const greenColorRef = useRef("rgba(124, 255, 178, 1)");
+
   // Hook sound playbacks
   const { play: playFire } = useSound("/audio/game-fire.mp3");
   const { play: playExplosion } = useSound("/audio/game-explosion.mp3");
@@ -60,6 +64,15 @@ export function GameCanvas() {
   useEffect(() => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
+
+    // Resolve CSS custom variable values dynamically from DOM computed properties
+    if (typeof window !== "undefined") {
+      const styles = window.getComputedStyle(document.documentElement);
+      const amber = styles.getPropertyValue("--phosphor-amber").trim();
+      const green = styles.getPropertyValue("--phosphor-green").trim();
+      if (amber) amberColorRef.current = amber;
+      if (green) greenColorRef.current = green;
+    }
     
     // Fit canvas to screen containers initially
     const w = containerRef.current?.clientWidth || 800;
@@ -193,8 +206,11 @@ export function GameCanvas() {
       const oldLives = gameState.lives;
       const oldGameOver = gameState.gameOver;
 
+      const amberColor = amberColorRef.current;
+      const greenColor = greenColorRef.current;
+
       // 1. Run physics update timestep
-      updateGameFrame(gameState, activeControls, AMBER_VAR, GREEN_VAR);
+      updateGameFrame(gameState, activeControls, amberColor, greenColor);
 
       // Trigger audio events based on state variations
       if (gameState.bullets.length > oldBulletCount) {
@@ -232,7 +248,7 @@ export function GameCanvas() {
       }
 
       // Draw bullets
-      ctx.fillStyle = GREEN_VAR;
+      ctx.fillStyle = greenColor;
       gameState.bullets.forEach((b) => {
         ctx.beginPath();
         ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
@@ -241,7 +257,7 @@ export function GameCanvas() {
 
       // Draw asteroids
       gameState.asteroids.forEach((ast) => {
-        drawAsteroid(ctx, ast, GREEN_VAR);
+        drawAsteroid(ctx, ast, greenColor);
       });
 
       // Draw particles
@@ -254,11 +270,11 @@ export function GameCanvas() {
 
       // Draw ship
       if (!gameState.gameOver) {
-        drawShip(ctx, gameState.ship, AMBER_VAR);
+        drawShip(ctx, gameState.ship, amberColor);
       }
 
       // Draw HUD scoreboard & registry metrics in monospace
-      ctx.fillStyle = AMBER_VAR;
+      ctx.fillStyle = amberColor;
       ctx.font = "10px var(--font-mono), Courier New, monospace";
       ctx.textAlign = "left";
 
@@ -269,7 +285,7 @@ export function GameCanvas() {
       // Lives represented as vector glyphs
       ctx.fillText("LIVES: ", 20, 60);
       ctx.lineWidth = 1;
-      ctx.strokeStyle = AMBER_VAR;
+      ctx.strokeStyle = amberColor;
       for (let i = 0; i < gameState.lives; i++) {
         ctx.save();
         ctx.translate(65 + i * 14, 55);
@@ -294,10 +310,10 @@ export function GameCanvas() {
         ctx.fillStyle = "rgba(5, 6, 10, 0.85)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctx.strokeStyle = AMBER_VAR;
+        ctx.strokeStyle = amberColor;
         ctx.strokeRect(canvas.width / 2 - 140, canvas.height / 2 - 80, 280, 160);
 
-        ctx.fillStyle = AMBER_VAR;
+        ctx.fillStyle = amberColor;
         ctx.textAlign = "center";
         ctx.font = "16px var(--font-mono), Courier New, monospace";
         ctx.fillText("SIMULATION TERMINATED", canvas.width / 2, canvas.height / 2 - 40);

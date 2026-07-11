@@ -27,10 +27,10 @@ export function InDriftBody({ x, y, size, seed }: InDriftBodyProps) {
       const angle = r() * Math.PI * 2;
       const dist = r() * size * 1.8;
       return {
-        dx: Math.cos(angle) * dist,
-        dy: Math.sin(angle) * dist,
-        r: r() * 1.4 + 0.3,
-        opacity: r() * 0.35 + 0.1,
+        dx: Math.round(Math.cos(angle) * dist * 10000) / 10000,
+        dy: Math.round(Math.sin(angle) * dist * 10000) / 10000,
+        r: Math.round((r() * 1.4 + 0.3) * 10000) / 10000,
+        opacity: Math.round((r() * 0.35 + 0.1) * 10000) / 10000,
       };
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps

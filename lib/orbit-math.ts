@@ -121,15 +121,15 @@ export function generateClusterPoints(opts: ClusterOptions): ClusterPoint[] {
     const rFactor = Math.pow(rand(), 0.6);
     const r = rFactor * radius;
 
-    const x = cx + Math.cos(angle) * r;
-    const y = cy + Math.sin(angle) * r;
+    const x = Math.round((cx + Math.cos(angle) * r) * 10000) / 10000;
+    const y = Math.round((cy + Math.sin(angle) * r) * 10000) / 10000;
 
     // Dots closer to center are slightly larger and brighter
     const proximity = 1 - rFactor;
-    const dotR = minRadius + proximity * (maxRadius - minRadius) * rand();
-    const opacity = 0.15 + proximity * 0.65 + rand() * 0.2;
+    const dotR = Math.round((minRadius + proximity * (maxRadius - minRadius) * rand()) * 10000) / 10000;
+    const opacity = Math.round(Math.min(0.15 + proximity * 0.65 + rand() * 0.2, 0.95) * 10000) / 10000;
 
-    points.push({ x, y, r: dotR, opacity: Math.min(opacity, 0.95) });
+    points.push({ x, y, r: dotR, opacity });
   }
 
   return points;
@@ -151,10 +151,10 @@ export function generateStarfield(options: {
 
   for (let i = 0; i < count; i++) {
     stars.push({
-      x: rand() * width,
-      y: rand() * height,
-      r: rand() * 0.8 + 0.2,
-      opacity: rand() * 0.25 + 0.05,
+      x: Math.round(rand() * width * 10000) / 10000,
+      y: Math.round(rand() * height * 10000) / 10000,
+      r: Math.round((rand() * 0.8 + 0.2) * 10000) / 10000,
+      opacity: Math.round((rand() * 0.25 + 0.05) * 10000) / 10000,
     });
   }
   return stars;
